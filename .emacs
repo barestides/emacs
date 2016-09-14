@@ -35,6 +35,7 @@
 (require 'evil)
 (evil-mode 1) 
 (global-evil-leader-mode)
+(require 'evil-magit)
 
 ;;evil customizations
 (defadvice evil-ex-search-next (after advice-for-evil-ex-search-next activate)
@@ -45,7 +46,6 @@
 (smex-initialize)
 
 (global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-x") 'smex-major-mode-commands)
 
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
