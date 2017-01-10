@@ -15,14 +15,10 @@
  ;; If there is more than one, they won't work right.
  )
 
-;;Add MELPA
-(when (>= emacs-major-version 24)
-    (require 'package)
-      (add-to-list
-           'package-archives
-              '("melpa" . "http://melpa.org/packages/")
-                 t)
-        (package-initialize))
+(require 'package)
+(package-initialize)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/"))
 
 ;;Zenburn color theme
 (load-theme 'zenburn t)
@@ -39,11 +35,12 @@
 ;;ace-window binding
 (global-set-key (kbd "C-,") 'ace-window)
 (global-set-key (kbd "C-x C-j") 'switch-to-buffer)
+(setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 
 ;;Evil mode and evil leader
 (require 'evil)
-(evil-mode 1) 
-(global-evil-leader-mode)
+(evil-mode 1)
+;; (global-evil-leader-mode)
 (require 'evil-magit)
 
 ;;Relative line numbers
@@ -84,6 +81,17 @@
 (defadvice evil-ex-search-next (after advice-for-evil-ex-search-next activate)
   (evil-scroll-line-to-center (line-number-at-pos)))
 
+(evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
+(evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-enter)
+(evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
+(evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
+
+;;Key chord to make simultaneous 'jk' bind to escape
+(setq key-chord-two-keys-delay 0.15)
+(key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
+(key-chord-mode 1)
+
+
 ;;smex
 (require 'smex)
 (smex-initialize)
@@ -91,8 +99,16 @@
 
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
+(dolist (k '([mouse-1] [down-mouse-1] [drag-mouse-1] [double-mouse-1] [triple-mouse-1]
+	     [mouse-2] [down-mouse-2] [drag-mouse-2] [double-mouse-2] [triple-mouse-2]
+	     [mouse-3] [down-mouse-3] [drag-mouse-3] [double-mouse-3] [triple-mouse-3]
+	     [mouse-4] [down-mouse-4] [drag-mouse-4] [double-mouse-4] [triple-mouse-4]
+	     [mouse-5] [down-mouse-5] [drag-mouse-5] [double-mouse-5] [triple-mouse-5]))
+  (global-unset-key k))
+
 ;;Projectile
 (projectile-global-mode)
+(setq projectile-switch-project-action 'neotree-projectile-action)
 
 ;;Function that actually clears eshell properly
 (defun eshell-clear-buffer ()
@@ -103,16 +119,23 @@
     (eshell-send-input)))
 
 (add-hook 'eshell-mode-hook
-      '(lambda()
-          (local-set-key (kbd "C-l") 'eshell-clear-buffer)))
+	  '(lambda()
+	     (local-set-key (kbd "C-l") 'eshell-clear-buffer)))
 
-;;Eshell custom prompt
-(setq eshell-prompt-function
-      (lambda()
-        (concat
-	  ((lambda (p-lst)
-	     (mapconcat (lambda (elm) (propertize (substring elm 0 1) 'face `(:foreground "green")))
-                                   p-lst 
-                                   "/"))
-                 (split-string (eshell/pwd) "/"))
-                (if (= (user-uid) 0) " # " " $ "))))
+;;Remove white space upon save
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;;Save buffers and stuff on exit
+(desktop-save-mode 1)
+
+
+;; ;;Eshell custom prompt
+;; (setq eshell-prompt-function
+;;       (lambda()
+;;         (concat
+;; 	  ((lambda (p-lst)
+;; 	     (mapconcat (lambda (elm) (propertize (substring elm 0 1) 'face `(:foreground "green")))
+;;                                    p-lst
+;;                                    "/"))
+;;                  (split-string (eshell/pwd) "/"))
+;;                 (if (= (user-uid) 0) " # " " $ "))))
