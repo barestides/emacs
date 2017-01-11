@@ -46,6 +46,17 @@
 ;;Relative line numbers
 (require 'linum-relative)
 
+(require 'eclim)
+(setq eclimd-autostart t)
+(global-eclim-mode)
+
+(require 'company)
+(require 'company-emacs-eclim)
+(company-emacs-eclim-setup)
+(global-company-mode t)
+
+(add-hook 'after-init-hook 'global-company-mode)
+
 ;;vimish-fold
 (require 'vimish-fold)
 (global-set-key (kbd "C-;") #'vimish-fold-toggle)
@@ -91,7 +102,6 @@
 (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
 (key-chord-mode 1)
 
-
 ;;smex
 (require 'smex)
 (smex-initialize)
@@ -125,6 +135,11 @@
 ;;Remove white space upon save
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+;;Eclim
+(require 'eclim)
+(setq eclimd-autostart t)
+(global-eclim-mode)
+
 ;;Save buffers and stuff on exit
 (desktop-save-mode 1)
 
@@ -139,3 +154,15 @@
 ;;                                    "/"))
 ;;                  (split-string (eshell/pwd) "/"))
 ;;                 (if (= (user-uid) 0) " # " " $ "))))
+
+(defun sudo-edit (&optional arg)
+  "Edit currently visited file as root.
+
+With a prefix ARG prompt for a file to visit.
+Will also prompt for a file to visit if current
+buffer is not visiting a file."
+  (interactive "P")
+  (if (or arg (not buffer-file-name))
+      (find-file (concat "/sudo:root@localhost:"
+                         (ido-read-file-name "Find file(as root): ")))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
