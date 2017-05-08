@@ -69,10 +69,6 @@
 (add-hook 'cider-repl-mode-hook
 	  (lambda () (local-set-key (kbd "C-l") #'cider-repl-clear-buffer)))
 (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-(eval-after-load "auto-complete"
-  '(progn
-     (add-to-list 'ac-modes 'cider-mode)
-     (add-to-list 'ac-modes 'cider-repl-mode)))
 
 ;;Enable paredit when in clojure mode
 (add-hook 'clojure-mode-hook 'paredit-mode)
@@ -101,6 +97,9 @@
 (setq key-chord-two-keys-delay 0.15)
 (key-chord-define evil-insert-state-map "jk" 'evil-normal-state)
 (key-chord-mode 1)
+
+
+(setq visible-bell 1)
 
 ;;smex
 (require 'smex)
