@@ -37,6 +37,10 @@
 (global-set-key (kbd "C-x C-j") 'switch-to-buffer)
 (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 
+;;Disable mouse
+(require 'disable-mouse)
+(global-disable-mouse-mode)
+
 ;;Evil mode and evil leader
 (require 'evil)
 (evil-mode 1)
@@ -54,8 +58,17 @@
 (require 'company-emacs-eclim)
 (company-emacs-eclim-setup)
 (global-company-mode t)
+(define-key company-active-map (kbd "C-n") 'company-select-next-or-abort)
+(define-key company-active-map (kbd "C-p") 'company-select-previous-or-abort)
 
 (add-hook 'after-init-hook 'global-company-mode)
+
+;;Change next and previous in company drop down to use control rather than meta
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-n") #'company-select-next)
+  (define-key company-active-map (kbd "C-p") #'company-select-previous))
 
 ;;vimish-fold
 (require 'vimish-fold)
@@ -105,7 +118,7 @@
 (require 'smex)
 (smex-initialize)
 (global-set-key (kbd "M-x") 'smex)
-
+;;old M-x
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 (dolist (k '([mouse-1] [down-mouse-1] [drag-mouse-1] [double-mouse-1] [triple-mouse-1]
@@ -165,3 +178,12 @@ buffer is not visiting a file."
       (find-file (concat "/sudo:root@localhost:"
                          (ido-read-file-name "Find file(as root): ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+;;for overtone, stops running synths
+
+(defun stop-synths ()
+  (interactive)
+  (cider-interactive-eval
+   (format "(stop)")))
+
+(define-key cider-mode-map (kbd "C-c C-w") 'stop-synths)
